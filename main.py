@@ -18,6 +18,9 @@ llm = ChatGroq(
 
 @tool
 def get_temp_info(city: str):
+    """
+    Get current weather temperature and condition for a given city using OpenWeather API.
+    """
     response = requests.get(
         f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={openweather_api_key}&units=metric"
     )
