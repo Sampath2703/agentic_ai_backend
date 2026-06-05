@@ -19,16 +19,19 @@ llm = ChatGroq(
 @tool
 def get_temp_info(city: str):
     """
-    Get current weather temperature and condition for a given city using OpenWeather API.
+    Get temperature, humidity, wind speed and weather condition for a city.
     """
     response = requests.get(
         f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={openweather_api_key}&units=metric"
     )
+
     data = response.json()
 
     return {
         "city": city,
         "temp": data["main"]["temp"],
+        "humidity": data["main"]["humidity"],
+        "wind_speed": data["wind"]["speed"],
         "weather": data["weather"][0]["description"]
     }
 
@@ -46,11 +49,31 @@ def get_weather(data: WeatherRequest):
 
     weather = get_temp_info.invoke(data.city)
 
-    answer = f"""
+    prompt = f"""
+You are a weather assistant.
+
+Weather Data:
 City: {weather['city']}
 Temperature: {weather['temp']}°C
-Weather: {weather['weather']}
-User Question: {data.question}
+Humidity: {weather['humidity']}%
+Wind Speed: {weather['wind_speed']} m/s
+Condition: {weather['weather']}
+
+User Question:
+{data.question}
+
+Give a short helpful answer based on weather conditions.
 """
 
-    return {"msg": answer}
+    result = llm.invoke(prompt)
+
+    return {
+        "msg": {
+            "city": weather["city"],
+            "temp": weather["temp"],
+            "humidity": weather["humidity"],
+            "wind_speed": weather["wind_speed"],
+            "weather": weather["weather"],
+            "answer": result.content
+        }
+    }
