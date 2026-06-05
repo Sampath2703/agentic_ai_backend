@@ -50,5 +50,7 @@ def incoming_parametrs(
         }]
     })
 
-    return result
+    return {
+        "msg":result
+    }
     
