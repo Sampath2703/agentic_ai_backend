@@ -13,7 +13,7 @@ openweather_api_key = os.getenv("OPENWEATHER_API_KEY")
 
 
 llm=ChatGroq(
-    api_key = "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",
+    api_key = os.getenv("GROQ_API_KEY"),
     model = "llama-3.3-70b-versatile"
 )
 
