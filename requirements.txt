@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+requests
+python-dotenv
+
+langchain
+langchain-groq
+langchain-community
+langchain-core
+
+pydantic
