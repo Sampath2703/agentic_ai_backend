@@ -44,35 +44,25 @@ class WeatherRequest(BaseModel):
 def home():
     return {"msg": "backend successfully running"}
 
-@app.post("/get_weather")
-def get_weather(data: WeatherRequest):
-    weather = get_temp_info.invoke({"city": data.city})
+@tool
+def get_temp_info(city: str):
+    response = requests.get(
+        f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={openweather_api_key}&units=metric"
+    )
 
-    prompt = f"""
-You are a weather assistant.
+    data = response.json()
 
-Weather Data:
-City: {weather['city']}
-Temperature: {weather['temp']}°C
-Humidity: {weather['humidity']}%
-Wind Speed: {weather['wind_speed']} m/s
-Condition: {weather['weather']}
-
-User Question:
-{data.question}
-
-Give a short helpful answer based on weather conditions.
-"""
-
-    result = llm.invoke(prompt)
+    # 🔴 ADD THIS CHECK (IMPORTANT)
+    if response.status_code != 200 or "main" not in data:
+        return {
+            "city": city,
+            "error": data.get("message", "Weather API failed")
+        }
 
     return {
-        "msg": {
-            "city": weather["city"],
-            "temp": weather["temp"],
-            "humidity": weather["humidity"],
-            "wind_speed": weather["wind_speed"],
-            "weather": weather["weather"],
-            "answer": result.content
-        }
+        "city": city,
+        "temp": data["main"]["temp"],
+        "humidity": data["main"]["humidity"],
+        "wind_speed": data["wind"]["speed"],
+        "weather": data["weather"][0]["description"]
     }
