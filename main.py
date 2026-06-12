@@ -40,29 +40,40 @@ class WeatherRequest(BaseModel):
     question: str
 
 
+@app.get("/")
+def home():
+    return {"msg": "backend successfully running"}
+
 @app.post("/get_weather")
 def get_weather(data: WeatherRequest):
-    try:
-        weather = get_temp_info.invoke(data.city)
 
-        prompt = f"""
-        Weather Data:
-        {weather}
+    weather = get_temp_info.invoke(data.city)
 
-        User Question:
-        {data.question}
-        """
+    prompt = f"""
+You are a weather assistant.
 
-        result = llm.invoke(prompt)
+Weather Data:
+City: {weather['city']}
+Temperature: {weather['temp']}°C
+Humidity: {weather['humidity']}%
+Wind Speed: {weather['wind_speed']} m/s
+Condition: {weather['weather']}
 
-        return {
-            "msg": {
-                **weather,
-                "answer": result.content
-            }
+User Question:
+{data.question}
+
+Give a short helpful answer based on weather conditions.
+"""
+
+    result = llm.invoke(prompt)
+
+    return {
+        "msg": {
+            "city": weather["city"],
+            "temp": weather["temp"],
+            "humidity": weather["humidity"],
+            "wind_speed": weather["wind_speed"],
+            "weather": weather["weather"],
+            "answer": result.content
         }
-
-    except Exception as e:
-        return {
-            "error": str(e)
-        }
+    }
