@@ -46,13 +46,16 @@ def home():
 
 @tool
 def get_temp_info(city: str):
+    """
+    Get temperature, humidity, wind speed and weather condition for a city using OpenWeather API.
+    """
+
     response = requests.get(
         f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={openweather_api_key}&units=metric"
     )
 
     data = response.json()
 
-    # 🔴 ADD THIS CHECK (IMPORTANT)
     if response.status_code != 200 or "main" not in data:
         return {
             "city": city,
