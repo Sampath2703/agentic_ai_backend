@@ -46,8 +46,7 @@ def home():
 
 @app.post("/get_weather")
 def get_weather(data: WeatherRequest):
-
-    weather = get_temp_info.invoke(data.city)
+    weather = get_temp_info.invoke({"city": data.city})
 
     prompt = f"""
 You are a weather assistant.
