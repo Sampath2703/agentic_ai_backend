@@ -76,8 +76,20 @@ Give a short helpful answer based on weather conditions.
     result = llm.invoke(prompt)
 
     return {
-        "msg": {
-            **weather,
-            "answer": result.content
-        }
+    "msg": {
+        "city": weather["city"],
+        "temp": weather["temp"],
+        "humidity": weather["humidity"],
+        "wind_speed": weather["wind_speed"],
+        "weather": weather["weather"],
+        "answer": "\n".join([
+            f"City: {weather['city']}",
+            f"Temperature: {weather['temp']}°C",
+            f"Humidity: {weather['humidity']}%",
+            f"Wind Speed: {weather['wind_speed']} m/s",
+            f"Condition: {weather['weather']}",
+            "",
+            f"Answer: {result.content}"
+        ])
     }
+}
